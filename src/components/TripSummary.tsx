@@ -10,6 +10,8 @@ import { Calendar as CalendarIcon, Clock, AlertTriangle, CheckCircle2, ChevronDo
 export default function TripSummary() {
   const [isExpanded, setIsExpanded] = useState(true);
   const { 
+    tripName,
+    setTripName,
     cities, 
     startDate, 
     totalDays: limitDays, 
@@ -36,7 +38,7 @@ export default function TripSummary() {
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <div className="flex items-center gap-3">
-          <h2 className="text-xl font-bold text-gray-900">{t('summary.title')}</h2>
+          <h2 className="text-xl font-bold text-gray-900">{tripName || t('summary.title')}</h2>
           {!isExpanded && (
             <span className="text-sm font-medium text-gray-600 bg-gray-100 px-2 py-0.5 rounded-full">
               {currentTotalDays} {t('summary.days')}
@@ -63,6 +65,19 @@ export default function TripSummary() {
         <div className="space-y-6 mt-6 animate-in fade-in slide-in-from-top-2 duration-200">
           {/* Settings: Start Date & Limit */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {t('summary.trip_name') || "Trip Name"}
+              </label>
+              <input
+                type="text"
+                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-semibold text-gray-900"
+                value={tripName}
+                onChange={(e) => setTripName(e.target.value)}
+                placeholder="My Awesome Trip"
+              />
+            </div>
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 {t('summary.start_date')}

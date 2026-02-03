@@ -8,26 +8,45 @@ export interface City {
 }
 
 interface TripState {
+  currentTripId: string | null;
+  tripName: string;
   cities: City[];
   startDate: Date | null;
   totalDays: number | null;
+  isLoading: boolean;
+  isSaving: boolean;
+  lastSaved: Date | null;
   
   // Actions
+  setTripId: (id: string) => void;
+  setTripName: (name: string) => void;
+  setCities: (cities: City[]) => void;
   addCity: (name: string, countryCode?: string) => void;
   removeCity: (id: string) => void;
   updateDays: (id: string, days: number) => void;
   reorderCities: (oldIndex: number, newIndex: number) => void;
   setStartDate: (date: Date | null) => void;
   setTotalDays: (days: number | null) => void;
-  saveTrip: () => Promise<void>;
-  loadTrip: (id: string) => Promise<void>;
+  setIsLoading: (loading: boolean) => void;
+  setIsSaving: (saving: boolean) => void;
+  setLastSaved: (date: Date) => void;
+  resetTrip: () => void;
 }
 
 export const useTripStore = create<TripState>((set) => ({
+  currentTripId: null,
+  tripName: 'New Trip',
   cities: [],
   startDate: null,
   totalDays: null,
+  isLoading: false,
+  isSaving: false,
+  lastSaved: null,
 
+  setTripId: (id) => set({ currentTripId: id }),
+  setTripName: (name) => set({ tripName: name }),
+  setCities: (cities) => set({ cities }),
+  
   addCity: (name: string, countryCode?: string) => set((state) => ({
     cities: [
       ...state.cities,
@@ -61,15 +80,16 @@ export const useTripStore = create<TripState>((set) => ({
   
   setTotalDays: (days: number | null) => set({ totalDays: days }),
 
-  saveTrip: async () => {
-    // Placeholder for Supabase integration
-    console.log('Saving trip to Supabase');
-    // TODO: Implement actual save logic
-  },
-
-  loadTrip: async (id: string) => {
-    // Placeholder for Supabase integration
-    console.log('Loading trip from Supabase:', id);
-    // TODO: Implement actual load logic
-  }
+  setIsLoading: (loading) => set({ isLoading: loading }),
+  setIsSaving: (saving) => set({ isSaving: saving }),
+  setLastSaved: (date) => set({ lastSaved: date }),
+  
+  resetTrip: () => set({
+    currentTripId: null,
+    tripName: 'New Trip',
+    cities: [],
+    startDate: null,
+    totalDays: null,
+    lastSaved: null
+  })
 }));
