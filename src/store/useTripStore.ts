@@ -11,7 +11,7 @@ export interface City {
 
 interface TripState {
   currentTripId: string | null;
-  // Removed tripName from store
+  tripName: string;
   cities: City[];
   startDate: Date | null;
   totalDays: number | null;
@@ -21,7 +21,7 @@ interface TripState {
   
   // Actions
   setTripId: (id: string) => void;
-  // Removed setTripName function
+  setTripName: (name: string) => void;
   setCities: (cities: City[]) => void;
   addCity: (name: string, countryCode?: string, latitude?: number, longitude?: number) => void;
   removeCity: (id: string) => void;
@@ -37,7 +37,7 @@ interface TripState {
 
 export const useTripStore = create<TripState>((set) => ({
   currentTripId: null,
-  // Removed tripName from initial state
+  tripName: '',
   cities: [],
   startDate: null,
   totalDays: null,
@@ -46,7 +46,7 @@ export const useTripStore = create<TripState>((set) => ({
   lastSaved: null,
 
   setTripId: (id) => set({ currentTripId: id }),
-  // Removed setTripName implementation
+  setTripName: (name) => set({ tripName: name }),
   setCities: (cities) => set({ cities }),
   
   addCity: (name: string, countryCode?: string, latitude?: number, longitude?: number) => set((state) => ({
@@ -90,7 +90,7 @@ export const useTripStore = create<TripState>((set) => ({
   
   resetTrip: () => set({
     currentTripId: null,
-// Removed tripName from resetTrip
+    tripName: '',
     cities: [],
     startDate: null,
     totalDays: null,

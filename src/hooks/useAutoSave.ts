@@ -56,5 +56,5 @@ export function useAutoSave() {
         clearTimeout(timeoutRef.current);
       }
     };
-  }, [currentTripId, tripName, cities, startDate, totalDays, setLastSaved]);
+  }, [currentTripId, cities, startDate, totalDays, setLastSaved, supabase]);
 }

@@ -18,29 +18,29 @@ export default function AppSidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const params = useParams();
-  const { currentTripId, lastSaved } = useTripStore();
+  const { currentTripId, lastSaved, setTripName } = useTripStore();
   const supabase = createClient();
 
   useEffect(() => {
+    const fetchTrips = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from('trips')
+        .select('id, name, updated_at')
+        .eq('user_id', user.id)
+        .order('updated_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching trips:', error);
+      } else {
+        setTrips(data || []);
+      }
+    };
+
     fetchTrips();
-  }, [currentTripId, lastSaved]);
-
-  const fetchTrips = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-
-    const { data, error } = await supabase
-      .from('trips')
-      .select('id, name, updated_at')
-      .eq('user_id', user.id)
-      .order('updated_at', { ascending: false });
-
-    if (error) {
-      console.error('Error fetching trips:', error);
-    } else {
-      setTrips(data || []);
-    }
-  };
+  }, [currentTripId, lastSaved, supabase]);
 
   const createNewTrip = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -65,6 +65,7 @@ export default function AppSidebar() {
     if (error) {
       console.error('Error creating trip:', error);
     } else if (data) {
+      setTripName(data.name);
       router.push(`/trip/${data.id}`);
       setIsOpen(false);
     }

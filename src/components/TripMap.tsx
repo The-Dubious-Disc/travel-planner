@@ -7,11 +7,15 @@ import 'leaflet/dist/leaflet.css';
 import { City } from '@/store/useTripStore';
 
 // Fix for default marker icons in Next.js/Leaflet
+interface IconDefaultWithGetIconUrl extends L.Icon.Default {
+  _getIconUrl?: () => string;
+}
+
 const iconUrl = 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png';
 const iconRetinaUrl = 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png';
 const shadowUrl = 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png';
 
-delete (L.Icon.Default.prototype as any)._getIconUrl;
+delete (L.Icon.Default.prototype as IconDefaultWithGetIconUrl)._getIconUrl;
 
 L.Icon.Default.mergeOptions({
   iconRetinaUrl,
@@ -29,7 +33,6 @@ function MapBounds({ cities }: { cities: City[] }) {
   useEffect(() => {
     if (cities.length === 0) return;
 
-    const bounds = L.latLngBounds(cities.map(c => [c.latitude || 0, c.longitude || 0]));
     const validPoints = cities.filter(c => c.latitude !== undefined && c.longitude !== undefined);
     
     if (validPoints.length > 0) {

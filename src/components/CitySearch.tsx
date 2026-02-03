@@ -5,6 +5,16 @@ import { useTripStore } from '@/store/useTripStore';
 import { Search, Plus, Loader2 } from 'lucide-react';
 
 import { useTranslation } from '@/hooks/useTranslation';
+import Image from 'next/image';
+
+interface RawCityResult {
+  name: string;
+  admin1?: string;
+  country?: string;
+  country_code?: string;
+  latitude: number;
+  longitude: number;
+}
 
 interface CityResult {
   name: string;
@@ -47,7 +57,7 @@ export default function CitySearch() {
       if (res.ok) {
         const data = await res.json();
         const results = data.results || [];
-        const cityResults = results.map((city: any) => ({
+        const cityResults = (results as RawCityResult[]).map((city) => ({
           name: [city.name, city.admin1, city.country].filter(Boolean).join(', '),
           countryCode: city.country_code,
           latitude: city.latitude,
@@ -130,9 +140,11 @@ export default function CitySearch() {
             >
               <div className="flex items-center gap-2">
                 {city.countryCode && (
-                  <img 
+                  <Image 
                     src={`https://flagcdn.com/w20/${city.countryCode.toLowerCase()}.png`}
                     alt={city.countryCode}
+                    width={20}
+                    height={15}
                     className="w-5 h-auto object-cover rounded-sm"
                   />
                 )}

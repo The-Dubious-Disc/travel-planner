@@ -17,7 +17,7 @@ export default function Home() {
 
       if (user) {
         // Fetch latest trip
-        const { data: latestTrip, error } = await supabase
+        const { data: latestTrip } = await supabase
           .from('trips')
           .select('id')
           .eq('user_id', user.id)
@@ -29,7 +29,7 @@ export default function Home() {
           router.push(`/trip/${latestTrip.id}`);
         } else {
           // Create new trip
-          const { data: newTrip, error: createError } = await supabase
+          const { data: newTrip } = await supabase
             .from('trips')
             .insert([
               { 
@@ -52,7 +52,7 @@ export default function Home() {
     };
 
     checkUserAndRedirect();
-  }, []);
+  }, [router, supabase]);
 
   if (isLoading) {
     return (

@@ -10,7 +10,6 @@ import {
   DragEndEvent
 } from '@dnd-kit/core';
 import {
-  arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
@@ -21,6 +20,7 @@ import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { useTripStore, City } from '@/store/useTripStore';
 import { useTranslation } from '@/hooks/useTranslation';
 import { GripVertical, Trash2 } from 'lucide-react';
+import Image from 'next/image';
 
 function SortableCityItem({ city }: { city: City }) {
   const {
@@ -59,9 +59,11 @@ function SortableCityItem({ city }: { city: City }) {
         </button>
         <div className="flex items-center gap-2 font-medium text-gray-900 truncate min-w-[100px] sm:min-w-[120px]">
           {city.countryCode && (
-            <img 
+            <Image 
               src={`https://flagcdn.com/w20/${city.countryCode.toLowerCase()}.png`}
               alt={city.countryCode}
+              width={20}
+              height={15}
               className="w-5 h-auto object-cover rounded-sm flex-shrink-0"
             />
           )}

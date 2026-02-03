@@ -11,7 +11,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { useAutoSave } from '@/hooks/useAutoSave';
 import { useTripStore } from '@/store/useTripStore';
 import { createClient } from '@/lib/supabase/client';
-import { MapPin, Calendar, Layout, Save } from 'lucide-react';
+import { MapPin, Calendar, Layout, Save, Globe } from 'lucide-react';
 
 const TripMap = dynamic(() => import('@/components/TripMap'), {
   loading: () => (
@@ -31,6 +31,7 @@ export default function TripPage() {
   const { 
     cities,
     setTripId, 
+    setTripName,
     setCities, 
     setStartDate, 
     setTotalDays,
@@ -62,6 +63,7 @@ export default function TripPage() {
       
       if (data) {
         setTripId(data.id);
+        setTripName(data.name || 'New Trip');
         setCities(data.cities || []);
         setStartDate(data.start_date ? new Date(data.start_date) : null);
         setTotalDays(data.total_days);
@@ -70,7 +72,7 @@ export default function TripPage() {
     };
     
     loadTrip();
-  }, [id]);
+  }, [id, router, setCities, setLastSaved, setStartDate, setTotalDays, setTripId, setTripName, supabase]);
 
   // Enable Auto-Save
   useAutoSave();

@@ -4,6 +4,20 @@ import { useTripStore } from '@/store/useTripStore';
 import { useTranslation } from '@/hooks/useTranslation';
 import { format, addDays } from 'date-fns';
 
+interface TimelineItem {
+  id: string;
+  name: string;
+  countryCode?: string;
+  latitude?: number;
+  longitude?: number;
+  days: number;
+  start: Date | null;
+  end: Date | null;
+  color: string;
+  startOffset: number;
+  endOffset: number;
+}
+
 const COLORS = [
   'bg-blue-500 border-blue-600',
   'bg-emerald-500 border-emerald-600',
@@ -28,19 +42,15 @@ export default function GanttChart() {
   }
 
   // Calculate timeline data
-  let currentOffset = 0;
-  const timelineData = cities.map((city, index) => {
-    const startOffset = currentOffset;
-    const endOffset = currentOffset + city.days;
+  const { timeline: timelineData, totalDays } = cities.reduce((acc: { timeline: TimelineItem[], currentOffset: number, totalDays: number }, city, index) => {
+    const startOffset = acc.currentOffset;
+    const endOffset = acc.currentOffset + city.days;
     
     // Calculate dates if startDate exists
     const start = startDate ? addDays(startDate, startOffset) : null;
     const end = startDate ? addDays(startDate, endOffset - 1) : null; 
     
-    // Update offset for next city
-    currentOffset += city.days;
-
-    return {
+    acc.timeline.push({
       ...city,
       start,
       end,
@@ -48,13 +58,16 @@ export default function GanttChart() {
       startOffset,
       endOffset,
       days: city.days
-    };
-  });
+    });
+    
+    acc.currentOffset += city.days;
+    acc.totalDays = acc.currentOffset;
+    return acc;
+  }, { timeline: [], currentOffset: 0, totalDays: 0 });
 
   const DAY_WIDTH_PX = 40; // Narrower since we are stacking
   const ROW_HEIGHT = 48; // Height of each row
   
-  const totalDays = currentOffset;
   const chartWidth = Math.max(800, totalDays * DAY_WIDTH_PX + 100); // Minimum width to look good
 
   return (
