@@ -7,6 +7,7 @@ create table public.trips (
   start_date timestamp with time zone,
   total_days integer not null default 1,
   created_at timestamp with time zone not null default now(),
+  updated_at timestamp with time zone not null default now(),
   constraint trips_pkey primary key (id)
 );
 

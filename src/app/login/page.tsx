@@ -35,7 +35,7 @@ export default function LoginPage() {
     setLoading(true)
     setError(null)
     
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
         email,
         password,
     })
@@ -43,21 +43,20 @@ export default function LoginPage() {
     if (error) {
         setError(error.message)
         setLoading(false)
-    } else {
-        setError('Check your email for the confirmation link.')
-        setLoading(false)
+        return
     }
-  }
 
-  const handleGoogleLogin = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${location.origin}/auth/callback`,
-      },
-    })
-    if (error) {
-      setError(error.message)
+    if (data.session) {
+        router.push('/')
+        router.refresh()
+    } else {
+        // Fallback if auto-confirm is not enabled, though we assume it is.
+        // If no session, we probably shouldn't redirect as they aren't logged in,
+        // but the prompt implies a simplified flow.
+        // We will just show a generic message if no session is immediately available
+        // to avoid a broken redirect loop or confusing state.
+        setError('Account created. Please sign in.') 
+        setLoading(false)
     }
   }
 
@@ -108,22 +107,6 @@ export default function LoginPage() {
             </button>
           </div>
         </form>
-
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-300"></div>
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-white text-gray-500">Or continue with</span>
-          </div>
-        </div>
-
-        <button
-          onClick={handleGoogleLogin}
-          className="w-full p-2 border rounded flex items-center justify-center gap-2 hover:bg-gray-50"
-        >
-          <span>Google</span>
-        </button>
       </div>
     </div>
   )
