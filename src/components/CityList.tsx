@@ -19,6 +19,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { useTripStore, City } from '@/store/useTripStore';
+import { useTranslation } from '@/hooks/useTranslation';
 import { GripVertical, Trash2 } from 'lucide-react';
 
 function SortableCityItem({ city }: { city: City }) {
@@ -33,6 +34,7 @@ function SortableCityItem({ city }: { city: City }) {
 
   const updateDays = useTripStore((state) => state.updateDays);
   const removeCity = useTripStore((state) => state.removeCity);
+  const { t } = useTranslation();
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -63,7 +65,7 @@ function SortableCityItem({ city }: { city: City }) {
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2">
           <label htmlFor={`days-${city.id}`} className="text-sm text-gray-500 hidden sm:inline">
-            Days:
+            {t('summary.days')}:
           </label>
           <input
             id={`days-${city.id}`}
@@ -91,6 +93,7 @@ function SortableCityItem({ city }: { city: City }) {
 export default function CityList() {
   const cities = useTripStore((state) => state.cities);
   const reorderCities = useTripStore((state) => state.reorderCities);
+  const { t } = useTranslation();
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -112,7 +115,7 @@ export default function CityList() {
   if (cities.length === 0) {
     return (
       <div className="text-center py-12 border-2 border-dashed border-gray-200 rounded-lg bg-gray-50">
-        <p className="text-gray-500">No cities added yet. Start by searching above!</p>
+        <p className="text-gray-500">{t('citylist.empty')}</p>
       </div>
     );
   }

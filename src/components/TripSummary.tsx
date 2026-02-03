@@ -1,8 +1,10 @@
 'use client';
 
 import { useTripStore } from '@/store/useTripStore';
+import { useTranslation } from '@/hooks/useTranslation';
 import { format, addDays } from 'date-fns';
 import { Calendar as CalendarIcon, Clock, AlertTriangle, CheckCircle2 } from 'lucide-react';
+// import { es, enUS } from 'date-fns/locale'; // Optional: if we want to localize dates later
 
 export default function TripSummary() {
   const { 
@@ -12,6 +14,8 @@ export default function TripSummary() {
     setStartDate, 
     setTotalDays 
   } = useTripStore();
+
+  const { t } = useTranslation();
 
   const currentTotalDays = cities.reduce((sum, city) => sum + city.days, 0);
   const cityCount = cities.length;
@@ -26,9 +30,9 @@ export default function TripSummary() {
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold text-gray-900">Trip Summary</h2>
+        <h2 className="text-xl font-bold text-gray-900">{t('summary.title')}</h2>
         <div className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">
-          {cityCount} {cityCount === 1 ? 'Destination' : 'Destinations'}
+          {cityCount} {cityCount === 1 ? t('summary.destination') : t('summary.destinations')}
         </div>
       </div>
 
@@ -36,7 +40,7 @@ export default function TripSummary() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Start Date
+            {t('summary.start_date')}
           </label>
           <div className="relative">
             <input
@@ -51,7 +55,7 @@ export default function TripSummary() {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Max Days (Optional)
+            {t('summary.max_days')}
           </label>
           <div className="relative">
             <input
@@ -73,11 +77,11 @@ export default function TripSummary() {
       {/* Stats Display */}
       <div className="bg-gray-50 rounded-lg p-4 grid grid-cols-2 gap-4">
         <div>
-          <p className="text-xs text-gray-500 uppercase tracking-wide font-semibold">Total Duration</p>
-          <p className="text-lg font-bold text-gray-900">{currentTotalDays} Days</p>
+          <p className="text-xs text-gray-500 uppercase tracking-wide font-semibold">{t('summary.total_duration')}</p>
+          <p className="text-lg font-bold text-gray-900">{currentTotalDays} {t('summary.days')}</p>
         </div>
         <div>
-          <p className="text-xs text-gray-500 uppercase tracking-wide font-semibold">End Date</p>
+          <p className="text-xs text-gray-500 uppercase tracking-wide font-semibold">{t('summary.end_date')}</p>
           <p className="text-lg font-bold text-gray-900">
             {tripEndDate ? format(tripEndDate, 'MMM d, yyyy') : '—'}
           </p>
@@ -98,12 +102,12 @@ export default function TripSummary() {
           )}
           <div>
             <p className="font-semibold">
-              {isOverLimit ? 'Time Limit Exceeded' : 'Within Budget'}
+              {isOverLimit ? t('summary.limit_exceeded') : t('summary.within_budget')}
             </p>
             <p className="text-sm mt-1">
               {isOverLimit 
-                ? `You are ${Math.abs(remainingDays!)} days over your ${limitDays}-day limit.`
-                : `You have ${remainingDays} days remaining.`
+                ? `${Math.abs(remainingDays!)} ${t('summary.days_over')}`
+                : `${remainingDays} ${t('summary.days_remaining')}`
               }
             </p>
           </div>

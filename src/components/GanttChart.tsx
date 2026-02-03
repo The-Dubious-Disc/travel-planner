@@ -1,6 +1,7 @@
 'use client';
 
 import { useTripStore } from '@/store/useTripStore';
+import { useTranslation } from '@/hooks/useTranslation';
 import { format, addDays } from 'date-fns';
 
 const COLORS = [
@@ -16,9 +17,14 @@ const COLORS = [
 
 export default function GanttChart() {
   const { cities, startDate } = useTripStore();
+  const { t } = useTranslation();
 
   if (cities.length === 0) {
-    return null;
+    return (
+      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-center h-64">
+        <p className="text-gray-400">{t('gantt.empty')}</p>
+      </div>
+    );
   }
 
   // Calculate timeline data
@@ -29,7 +35,7 @@ export default function GanttChart() {
     
     // Calculate dates if startDate exists
     const start = startDate ? addDays(startDate, startOffset) : null;
-    const end = startDate ? addDays(startDate, endOffset - 1) : null; // Inclusive end date for display
+    const end = startDate ? addDays(startDate, endOffset - 1) : null; 
     
     // Update offset for next city
     currentOffset += city.days;
@@ -39,70 +45,84 @@ export default function GanttChart() {
       start,
       end,
       color: COLORS[index % COLORS.length],
-      startDayIdx: startOffset + 1,
-      endDayIdx: endOffset
+      startOffset,
+      endOffset,
+      days: city.days
     };
   });
 
-  // Scale: 1 day = X pixels (or percentage). 
-  // For scrolling, let's use a fixed min-width per day.
-  // Using flex-basis/width relative to total days might be too small for long trips.
-  // Let's use a dynamic grid or flex with width styles.
+  const DAY_WIDTH_PX = 40; // Narrower since we are stacking
+  const ROW_HEIGHT = 48; // Height of each row
   
-  const DAY_WIDTH_PX = 60; // Wide enough for a label if needed, or just visual bulk
-  
-  return (
-    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-6">
-      <h2 className="text-xl font-bold text-gray-900 mb-4">Trip Timeline</h2>
-      
-      <div className="w-full overflow-x-auto pb-4">
-        {/* Container for the chart */}
-        <div 
-          className="flex h-32 relative min-w-max"
-          style={{ width: `${Math.max(100, currentOffset * DAY_WIDTH_PX)}px` }}
-        >
-          {timelineData.map((item) => (
-            <div
-              key={item.id}
-              className={`relative h-16 mt-8 first:rounded-l-lg last:rounded-r-lg shadow-sm border-b-4 border-r border-white/20 transition-all hover:brightness-110 group ${item.color}`}
-              style={{ width: `${item.days * DAY_WIDTH_PX}px` }}
-            >
-              {/* Label inside bar */}
-              <div className="absolute inset-0 flex items-center justify-center p-1">
-                <span className="text-white font-medium text-sm truncate px-1 shadow-sm">
-                  {item.name}
-                </span>
-              </div>
+  const totalDays = currentOffset;
+  const chartWidth = Math.max(800, totalDays * DAY_WIDTH_PX + 100); // Minimum width to look good
 
-              {/* Tooltip / Details on Hover or static below */}
-              <div className="absolute -top-7 left-0 text-xs font-semibold text-gray-500 whitespace-nowrap">
-                {item.start && item.end ? (
-                   format(item.start, 'MMM d')
-                ) : (
-                  `Day ${item.startDayIdx}`
-                )}
-              </div>
-              
-              {/* Duration pill */}
-              <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-[10px] px-2 py-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
-                {item.days} days
-              </div>
-            </div>
-          ))}
-          
-          {/* End Date Marker */}
-          <div className="absolute -top-7 right-0 translate-x-1/2 text-xs font-semibold text-gray-500">
-             {timelineData.length > 0 && (
-               timelineData[timelineData.length - 1].end 
-                 ? format(addDays(timelineData[timelineData.length - 1].end!, 1), 'MMM d') // The day they leave / trip over
-                 : `Day ${currentOffset + 1}`
-             )}
-          </div>
+  return (
+    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 h-full flex flex-col">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-xl font-bold text-gray-900">{t('gantt.title')}</h2>
+        <div className="text-sm text-gray-500">
+           {t('gantt.total')}: <span className="font-semibold text-gray-900">{totalDays} {t('summary.days')}</span>
         </div>
-        
-        {/* Legend / Info if needed */}
-        <div className="mt-6 text-sm text-gray-400 flex gap-4">
-           <span>Total: {currentOffset} days</span>
+      </div>
+      
+      <div className="flex-1 overflow-auto">
+        <div className="relative pb-8" style={{ minWidth: `${chartWidth}px` }}>
+          
+          {/* Grid Lines (Optional background) */}
+          <div className="absolute inset-0 flex pointer-events-none" style={{ width: `${totalDays * DAY_WIDTH_PX}px` }}>
+            {Array.from({ length: totalDays + 1 }).map((_, i) => (
+              <div 
+                key={i} 
+                className="h-full border-l border-dashed border-gray-100 first:border-solid first:border-gray-200" 
+                style={{ left: `${i * DAY_WIDTH_PX}px`, position: 'absolute' }}
+              />
+            ))}
+          </div>
+
+          {/* Waterfall Rows */}
+          <div className="space-y-4 pt-2 relative z-10">
+            {timelineData.map((item, index) => (
+              <div key={item.id} className="relative flex items-center" style={{ height: `${ROW_HEIGHT}px` }}>
+                
+                {/* Connecting Line from previous (if not first) */}
+                {index > 0 && (
+                  <div 
+                    className="absolute border-l-2 border-b-2 border-gray-300 rounded-bl-lg -z-10"
+                    style={{
+                      top: `-${ROW_HEIGHT / 2 + 10}px`, 
+                      left: `${item.startOffset * DAY_WIDTH_PX}px`,
+                      width: '16px', // Small curve hook
+                      height: `${ROW_HEIGHT / 2 + 26}px`
+                    }}
+                  />
+                )}
+
+                {/* The Bar */}
+                <div
+                  className={`relative h-10 rounded-lg shadow-sm border border-white/20 transition-all hover:scale-[1.02] hover:shadow-md group ${item.color} flex items-center px-3 text-white`}
+                  style={{ 
+                    marginLeft: `${item.startOffset * DAY_WIDTH_PX}px`,
+                    width: `${item.days * DAY_WIDTH_PX}px`,
+                  }}
+                >
+                  <span className="font-medium text-sm truncate w-full">{item.name}</span>
+                  
+                  {/* Tooltip / Info */}
+                  <div className="absolute -top-8 left-0 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20 pointer-events-none">
+                    {item.days} {t('summary.days')} • {item.start ? format(item.start, 'MMM d') : `Day ${item.startOffset + 1}`} - {item.end ? format(item.end, 'MMM d') : `Day ${item.endOffset}`}
+                  </div>
+                </div>
+
+                {/* Date Label on the right of the bar */}
+                <span className="ml-3 text-xs font-medium text-gray-400 whitespace-nowrap">
+                   {item.start && format(item.start, 'MMM d')}
+                </span>
+
+              </div>
+            ))}
+          </div>
+
         </div>
       </div>
     </div>
