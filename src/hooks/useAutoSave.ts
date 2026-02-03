@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/client';
 export function useAutoSave() {
   const { 
     currentTripId, 
-    tripName, 
+  // Removed tripName reference 
     cities, 
     startDate, 
     totalDays, 
@@ -35,7 +35,7 @@ export function useAutoSave() {
         const { error } = await supabase
           .from('trips')
           .update({
-            name: tripName,
+            // Removed tripName key from supabase update
             cities: cities,
             start_date: startDate ? startDate.toISOString() : null,
             total_days: totalDays,
