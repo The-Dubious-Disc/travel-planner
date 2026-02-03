@@ -31,7 +31,6 @@ export default function TripPage() {
   const { 
     cities,
     setTripId, 
-    setTripName, 
     setCities, 
     setStartDate, 
     setTotalDays,
@@ -63,7 +62,6 @@ export default function TripPage() {
       
       if (data) {
         setTripId(data.id);
-        // Removed setTripName call
         setCities(data.cities || []);
         setStartDate(data.start_date ? new Date(data.start_date) : null);
         setTotalDays(data.total_days);
