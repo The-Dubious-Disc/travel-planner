@@ -9,6 +9,8 @@ import { useTranslation } from '@/hooks/useTranslation';
 interface CityResult {
   name: string;
   countryCode?: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 export default function CitySearch() {
@@ -47,7 +49,9 @@ export default function CitySearch() {
         const results = data.results || [];
         const cityResults = results.map((city: any) => ({
           name: [city.name, city.admin1, city.country].filter(Boolean).join(', '),
-          countryCode: city.country_code
+          countryCode: city.country_code,
+          latitude: city.latitude,
+          longitude: city.longitude
         }));
         setFilteredCities(cityResults);
         setIsOpen(true);
@@ -82,7 +86,7 @@ export default function CitySearch() {
   };
 
   const handleSelectCity = (city: CityResult) => {
-    addCity(city.name, city.countryCode);
+    addCity(city.name, city.countryCode, city.latitude, city.longitude);
     setQuery('');
     setIsOpen(false);
     setFilteredCities([]);

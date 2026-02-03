@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { useParams, useRouter } from 'next/navigation';
 import CitySearch from '@/components/CitySearch';
 import CityList from '@/components/CityList';
@@ -12,6 +13,15 @@ import { useTripStore } from '@/store/useTripStore';
 import { createClient } from '@/lib/supabase/client';
 import { MapPin, Calendar, Layout, Globe, Save } from 'lucide-react';
 
+const TripMap = dynamic(() => import('@/components/TripMap'), {
+  loading: () => (
+    <div className="h-full w-full flex items-center justify-center bg-gray-100 rounded-lg">
+      <p className="text-gray-500">Loading map...</p>
+    </div>
+  ),
+  ssr: false
+});
+
 export default function TripPage() {
   const { id } = useParams();
   const router = useRouter();
@@ -19,6 +29,7 @@ export default function TripPage() {
   const { t, language, setLanguage } = useTranslation();
   
   const { 
+    cities,
     setTripId, 
     setTripName, 
     setCities, 
@@ -177,12 +188,8 @@ export default function TripPage() {
               {activeTab === 'timeline' ? (
                 <GanttChart />
               ) : (
-                <div className="bg-white h-full rounded-xl shadow-sm border border-gray-100 flex items-center justify-center bg-grid-slate-100">
-                   <div className="text-center text-gray-400">
-                     <MapPin size={48} className="mx-auto mb-4 opacity-50" />
-                     <p className="text-lg">{t('map.placeholder.title')}</p>
-                     <p className="text-sm">{t('map.placeholder.desc')}</p>
-                   </div>
+                <div className="bg-white h-full rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                   <TripMap cities={cities} />
                 </div>
               )}
             </div>

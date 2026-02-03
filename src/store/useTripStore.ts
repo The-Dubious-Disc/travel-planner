@@ -4,6 +4,8 @@ export interface City {
   id: string;
   name: string;
   countryCode?: string;
+  latitude?: number;
+  longitude?: number;
   days: number;
 }
 
@@ -21,7 +23,7 @@ interface TripState {
   setTripId: (id: string) => void;
   setTripName: (name: string) => void;
   setCities: (cities: City[]) => void;
-  addCity: (name: string, countryCode?: string) => void;
+  addCity: (name: string, countryCode?: string, latitude?: number, longitude?: number) => void;
   removeCity: (id: string) => void;
   updateDays: (id: string, days: number) => void;
   reorderCities: (oldIndex: number, newIndex: number) => void;
@@ -47,13 +49,15 @@ export const useTripStore = create<TripState>((set) => ({
   setTripName: (name) => set({ tripName: name }),
   setCities: (cities) => set({ cities }),
   
-  addCity: (name: string, countryCode?: string) => set((state) => ({
+  addCity: (name: string, countryCode?: string, latitude?: number, longitude?: number) => set((state) => ({
     cities: [
       ...state.cities,
       {
         id: crypto.randomUUID(),
         name,
         countryCode,
+        latitude,
+        longitude,
         days: 3 // Default to 3 days
       }
     ]
