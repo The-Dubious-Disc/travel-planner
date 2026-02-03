@@ -1,52 +1,63 @@
-import { Calendar, Map, List, Layout } from 'lucide-react';
+'use client';
+
+import CitySearch from '@/components/CitySearch';
+import CityList from '@/components/CityList';
+import { MapPin, Calendar } from 'lucide-react';
 
 export default function Home() {
   return (
-    <div className="flex flex-col h-screen bg-gray-100">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 p-4 flex items-center justify-between">
-        <h1 className="text-xl font-bold flex items-center gap-2">
-          <Map className="w-6 h-6" />
-          Travel Planner
-        </h1>
-        <div className="flex gap-2">
-           <button className="p-2 hover:bg-gray-100 rounded" aria-label="List view"><List className="w-5 h-5" /></button>
-           <button className="p-2 hover:bg-gray-100 rounded" aria-label="Calendar view"><Calendar className="w-5 h-5" /></button>
-        </div>
-      </header>
-
-      {/* Main Content Area - 2 Columns */}
-      <main className="flex-1 flex overflow-hidden">
-        {/* Left Column (e.g., POI List / Sidebar) */}
-        <aside className="w-1/3 min-w-[300px] bg-white border-r border-gray-200 p-4 overflow-y-auto">
-          <h2 className="font-semibold mb-4">Places & Activities</h2>
-          <div className="space-y-2">
-             <div className="p-3 bg-gray-50 rounded border border-gray-100">Draft Item 1</div>
-             <div className="p-3 bg-gray-50 rounded border border-gray-100">Draft Item 2</div>
-             <div className="p-3 bg-gray-50 rounded border border-gray-100">Draft Item 3</div>
+    <main className="min-h-screen bg-gray-50 p-4 md:p-8">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Left Column: Trip Builder */}
+        <div className="lg:col-span-1 space-y-6">
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <h1 className="text-2xl font-bold text-gray-900 mb-2 flex items-center gap-2">
+              <MapPin className="text-blue-600" />
+              Travel Planner
+            </h1>
+            <p className="text-gray-500 mb-6">Build your dream itinerary step by step.</p>
+            
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Add a Destination
+                </label>
+                <CitySearch />
+              </div>
+              
+              <div className="pt-4 border-t border-gray-100">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-lg font-semibold text-gray-900">Itinerary</h2>
+                  <span className="text-sm text-gray-400 flex items-center gap-1">
+                    <Calendar size={14} />
+                    Drag to reorder
+                  </span>
+                </div>
+                <CityList />
+              </div>
+            </div>
           </div>
-        </aside>
+          
+          {/* Summary Card (Placeholder for now) */}
+          <div className="bg-blue-50 p-6 rounded-xl border border-blue-100">
+             <h3 className="font-semibold text-blue-900 mb-1">Trip Summary</h3>
+             <p className="text-blue-700 text-sm">
+               Add cities to see your trip stats here.
+             </p>
+          </div>
+        </div>
 
-        {/* Right Column (e.g., Map or Detail View) */}
-        <section className="flex-1 bg-gray-50 p-4 relative">
-           <div className="absolute inset-0 flex items-center justify-center text-gray-400">
-             Map Placeholder
-           </div>
-        </section>
-      </main>
-
-      {/* Bottom Gantt / Timeline */}
-      <footer className="h-48 bg-white border-t border-gray-200 p-4 overflow-x-auto">
-         <h2 className="font-semibold mb-2 flex items-center gap-2">
-           <Layout className="w-4 h-4" /> Timeline
-         </h2>
-         <div className="flex gap-4">
-            {/* Mock timeline items */}
-            <div className="w-32 h-16 bg-blue-100 rounded border border-blue-200 flex-shrink-0 p-2 text-sm">Day 1</div>
-            <div className="w-32 h-16 bg-blue-100 rounded border border-blue-200 flex-shrink-0 p-2 text-sm">Day 2</div>
-            <div className="w-32 h-16 bg-blue-100 rounded border border-blue-200 flex-shrink-0 p-2 text-sm">Day 3</div>
-         </div>
-      </footer>
-    </div>
+        {/* Right Column: Map/Visualizer (Placeholder for MVP) */}
+        <div className="lg:col-span-2 hidden lg:block">
+          <div className="bg-white h-[calc(100vh-4rem)] rounded-xl shadow-sm border border-gray-100 flex items-center justify-center bg-grid-slate-100">
+             <div className="text-center text-gray-400">
+               <MapPin size={48} className="mx-auto mb-4 opacity-50" />
+               <p className="text-lg">Map View Coming Soon</p>
+               <p className="text-sm">Select cities to visualize your route</p>
+             </div>
+          </div>
+        </div>
+      </div>
+    </main>
   );
 }
