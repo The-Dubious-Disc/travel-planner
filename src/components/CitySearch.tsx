@@ -33,11 +33,15 @@ export default function CitySearch() {
 
     setIsLoading(true);
     try {
-      const res = await fetch(`https://api.teleport.org/api/cities/?search=${encodeURIComponent(searchTerm)}`);
+      const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(searchTerm)}&count=5&language=en&format=json`);
       if (res.ok) {
         const data = await res.json();
-        const results = data._embedded?.['city:search-results'] || [];
-        const cityNames = results.map((item: any) => item.matching_full_name);
+        const results = data.results || [];
+        const cityNames = results.map((city: any) => {
+          return [city.name, city.admin1, city.country]
+            .filter(Boolean)
+            .join(', ');
+        });
         setFilteredCities(cityNames);
         setIsOpen(true);
       } else {
