@@ -67,10 +67,10 @@ export default function GanttChart() {
       </div>
       
       <div className="flex-1 overflow-x-auto overflow-y-hidden w-full">
-        <div className="relative pb-8 min-h-[300px]" style={{ minWidth: `${chartWidth}px` }}>
+        <div className="relative pt-12 pb-8 min-h-[300px]" style={{ minWidth: `${chartWidth}px` }}>
           
           {/* Grid Lines (Optional background) */}
-          <div className="absolute inset-0 flex pointer-events-none" style={{ width: `${totalDays * DAY_WIDTH_PX}px` }}>
+          <div className="absolute inset-0 flex pointer-events-none" style={{ width: `${totalDays * DAY_WIDTH_PX}px`, top: '48px' }}>
             {Array.from({ length: totalDays + 1 }).map((_, i) => (
               <div 
                 key={i} 

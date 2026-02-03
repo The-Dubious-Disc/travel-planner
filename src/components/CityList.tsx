@@ -57,8 +57,15 @@ function SortableCityItem({ city }: { city: City }) {
         >
           <GripVertical size={20} />
         </button>
-        <div className="font-medium text-gray-900 truncate min-w-[100px] sm:min-w-[120px]">
-          {city.name}
+        <div className="flex items-center gap-2 font-medium text-gray-900 truncate min-w-[100px] sm:min-w-[120px]">
+          {city.countryCode && (
+            <img 
+              src={`https://flagcdn.com/w20/${city.countryCode.toLowerCase()}.png`}
+              alt={city.countryCode}
+              className="w-5 h-auto object-cover rounded-sm flex-shrink-0"
+            />
+          )}
+          <span className="truncate">{city.name}</span>
         </div>
       </div>
 

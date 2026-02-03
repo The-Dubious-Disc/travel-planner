@@ -4,15 +4,23 @@ import { useState, useRef, useEffect } from 'react';
 import { useTripStore } from '@/store/useTripStore';
 import { Search, Plus, Loader2 } from 'lucide-react';
 
+import { useTranslation } from '@/hooks/useTranslation';
+
+interface CityResult {
+  name: string;
+  countryCode?: string;
+}
+
 export default function CitySearch() {
   const [query, setQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [filteredCities, setFilteredCities] = useState<string[]>([]);
+  const [filteredCities, setFilteredCities] = useState<CityResult[]>([]);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
   
   const addCity = useTripStore((state) => state.addCity);
+  const { language } = useTranslation();
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -33,16 +41,15 @@ export default function CitySearch() {
 
     setIsLoading(true);
     try {
-      const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(searchTerm)}&count=5&language=en&format=json`);
+      const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(searchTerm)}&count=5&language=${language}&format=json`);
       if (res.ok) {
         const data = await res.json();
         const results = data.results || [];
-        const cityNames = results.map((city: any) => {
-          return [city.name, city.admin1, city.country]
-            .filter(Boolean)
-            .join(', ');
-        });
-        setFilteredCities(cityNames);
+        const cityResults = results.map((city: any) => ({
+          name: [city.name, city.admin1, city.country].filter(Boolean).join(', '),
+          countryCode: city.country_code
+        }));
+        setFilteredCities(cityResults);
         setIsOpen(true);
       } else {
         console.error('Failed to fetch cities');
@@ -74,11 +81,8 @@ export default function CitySearch() {
     }
   };
 
-  const handleSelectCity = (city: string) => {
-    // Clean up city name if needed, usually comes as "Paris, Île-de-France, France"
-    // We might want just "Paris, France" but the full name is precise.
-    // Let's keep it simple for now.
-    addCity(city);
+  const handleSelectCity = (city: CityResult) => {
+    addCity(city.name, city.countryCode);
     setQuery('');
     setIsOpen(false);
     setFilteredCities([]);
@@ -120,8 +124,15 @@ export default function CitySearch() {
               className="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-blue-50 text-gray-900"
               onClick={() => handleSelectCity(city)}
             >
-              <div className="flex items-center">
-                <span className="font-medium block truncate">{city}</span>
+              <div className="flex items-center gap-2">
+                {city.countryCode && (
+                  <img 
+                    src={`https://flagcdn.com/w20/${city.countryCode.toLowerCase()}.png`}
+                    alt={city.countryCode}
+                    className="w-5 h-auto object-cover rounded-sm"
+                  />
+                )}
+                <span className="font-medium block truncate">{city.name}</span>
               </div>
               <span className="absolute inset-y-0 right-0 flex items-center pr-4 text-blue-600">
                 <Plus className="h-4 w-4" />

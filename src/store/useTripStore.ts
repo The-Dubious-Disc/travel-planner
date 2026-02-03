@@ -3,6 +3,7 @@ import { create } from 'zustand';
 export interface City {
   id: string;
   name: string;
+  countryCode?: string;
   days: number;
 }
 
@@ -12,7 +13,7 @@ interface TripState {
   totalDays: number | null;
   
   // Actions
-  addCity: (name: string) => void;
+  addCity: (name: string, countryCode?: string) => void;
   removeCity: (id: string) => void;
   updateDays: (id: string, days: number) => void;
   reorderCities: (oldIndex: number, newIndex: number) => void;
@@ -25,12 +26,13 @@ export const useTripStore = create<TripState>((set) => ({
   startDate: null,
   totalDays: null,
 
-  addCity: (name: string) => set((state) => ({
+  addCity: (name: string, countryCode?: string) => set((state) => ({
     cities: [
       ...state.cities,
       {
         id: crypto.randomUUID(),
         name,
+        countryCode,
         days: 3 // Default to 3 days
       }
     ]
