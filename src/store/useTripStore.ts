@@ -19,6 +19,8 @@ interface TripState {
   reorderCities: (oldIndex: number, newIndex: number) => void;
   setStartDate: (date: Date | null) => void;
   setTotalDays: (days: number | null) => void;
+  saveTrip: () => Promise<void>;
+  loadTrip: (id: string) => Promise<void>;
 }
 
 export const useTripStore = create<TripState>((set) => ({
@@ -58,4 +60,16 @@ export const useTripStore = create<TripState>((set) => ({
   setStartDate: (date: Date | null) => set({ startDate: date }),
   
   setTotalDays: (days: number | null) => set({ totalDays: days }),
+
+  saveTrip: async () => {
+    // Placeholder for Supabase integration
+    console.log('Saving trip to Supabase');
+    // TODO: Implement actual save logic
+  },
+
+  loadTrip: async (id: string) => {
+    // Placeholder for Supabase integration
+    console.log('Loading trip from Supabase:', id);
+    // TODO: Implement actual load logic
+  }
 }));
