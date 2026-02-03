@@ -41,7 +41,7 @@ export default function Home() {
 
         <div className="flex flex-col md:grid md:grid-cols-12 gap-8 items-start h-auto md:h-[calc(100vh-140px)]">
           {/* Left Column: Trip Builder */}
-          <div className="w-full md:col-span-4 lg:col-span-4 space-y-6 md:overflow-y-auto md:h-full md:pr-2">
+          <div className="w-full md:col-span-5 lg:col-span-5 space-y-6 md:overflow-y-auto md:h-full md:pr-2">
             <TripSummary />
 
             <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-100">
@@ -72,7 +72,7 @@ export default function Home() {
           </div>
 
           {/* Right Column: Visualizer (Tabs) */}
-          <div className="w-full md:col-span-8 lg:col-span-8 md:h-full flex flex-col">
+          <div className="w-full md:col-span-7 lg:col-span-7 md:h-full flex flex-col">
             {/* Tabs Header */}
             <div className="flex space-x-1 rounded-xl bg-blue-900/5 p-1 mb-4 w-full md:w-fit">
               <button
