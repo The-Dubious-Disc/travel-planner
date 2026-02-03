@@ -39,12 +39,12 @@ export default function Home() {
              </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start h-[calc(100vh-140px)]">
+        <div className="flex flex-col md:grid md:grid-cols-12 gap-8 items-start h-auto md:h-[calc(100vh-140px)]">
           {/* Left Column: Trip Builder */}
-          <div className="lg:col-span-1 space-y-6 overflow-y-auto h-full pr-2">
+          <div className="w-full md:col-span-4 lg:col-span-4 space-y-6 md:overflow-y-auto md:h-full md:pr-2">
             <TripSummary />
 
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-100">
               <h2 className="text-xl font-bold text-gray-900 mb-2">
                 {t('app.subtitle')}
               </h2>
@@ -72,12 +72,12 @@ export default function Home() {
           </div>
 
           {/* Right Column: Visualizer (Tabs) */}
-          <div className="lg:col-span-2 h-full flex flex-col">
+          <div className="w-full md:col-span-8 lg:col-span-8 md:h-full flex flex-col">
             {/* Tabs Header */}
-            <div className="flex space-x-1 rounded-xl bg-blue-900/5 p-1 mb-4 w-fit">
+            <div className="flex space-x-1 rounded-xl bg-blue-900/5 p-1 mb-4 w-full md:w-fit">
               <button
                 onClick={() => setActiveTab('timeline')}
-                className={`w-32 rounded-lg py-2.5 text-sm font-medium leading-5 transition-all
+                className={`flex-1 md:w-32 rounded-lg py-3 md:py-2.5 text-sm font-medium leading-5 transition-all
                   ${activeTab === 'timeline'
                     ? 'bg-white text-blue-700 shadow'
                     : 'text-gray-600 hover:bg-white/[0.12] hover:text-blue-600'
@@ -90,7 +90,7 @@ export default function Home() {
               </button>
               <button
                 onClick={() => setActiveTab('map')}
-                className={`w-32 rounded-lg py-2.5 text-sm font-medium leading-5 transition-all
+                className={`flex-1 md:w-32 rounded-lg py-3 md:py-2.5 text-sm font-medium leading-5 transition-all
                   ${activeTab === 'map'
                     ? 'bg-white text-blue-700 shadow'
                     : 'text-gray-600 hover:bg-white/[0.12] hover:text-blue-600'

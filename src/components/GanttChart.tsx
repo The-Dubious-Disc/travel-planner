@@ -58,16 +58,16 @@ export default function GanttChart() {
   const chartWidth = Math.max(800, totalDays * DAY_WIDTH_PX + 100); // Minimum width to look good
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 h-full flex flex-col">
-      <div className="flex items-center justify-between mb-6">
+    <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-100 h-full flex flex-col overflow-hidden">
+      <div className="flex items-center justify-between mb-4 md:mb-6">
         <h2 className="text-xl font-bold text-gray-900">{t('gantt.title')}</h2>
         <div className="text-sm text-gray-500">
            {t('gantt.total')}: <span className="font-semibold text-gray-900">{totalDays} {t('summary.days')}</span>
         </div>
       </div>
       
-      <div className="flex-1 overflow-auto">
-        <div className="relative pb-8" style={{ minWidth: `${chartWidth}px` }}>
+      <div className="flex-1 overflow-x-auto overflow-y-hidden w-full">
+        <div className="relative pb-8 min-h-[300px]" style={{ minWidth: `${chartWidth}px` }}>
           
           {/* Grid Lines (Optional background) */}
           <div className="absolute inset-0 flex pointer-events-none" style={{ width: `${totalDays * DAY_WIDTH_PX}px` }}>

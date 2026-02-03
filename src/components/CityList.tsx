@@ -47,22 +47,22 @@ function SortableCityItem({ city }: { city: City }) {
     <div
       ref={setNodeRef}
       style={style}
-      className="flex items-center justify-between p-4 mb-3 bg-white border border-gray-200 rounded-lg shadow-sm hover:border-blue-300 transition-colors"
+      className="flex flex-wrap sm:flex-nowrap items-center justify-between p-3 sm:p-4 mb-3 bg-white border border-gray-200 rounded-lg shadow-sm hover:border-blue-300 transition-colors gap-2"
     >
-      <div className="flex items-center gap-3 overflow-hidden">
+      <div className="flex items-center gap-2 sm:gap-3 overflow-hidden flex-grow">
         <button
-          className="cursor-grab text-gray-400 hover:text-gray-600 active:cursor-grabbing touch-none"
+          className="cursor-grab text-gray-400 hover:text-gray-600 active:cursor-grabbing touch-none p-1 sm:p-0"
           {...attributes}
           {...listeners}
         >
           <GripVertical size={20} />
         </button>
-        <div className="font-medium text-gray-900 truncate min-w-[120px]">
+        <div className="font-medium text-gray-900 truncate min-w-[100px] sm:min-w-[120px]">
           {city.name}
         </div>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2 sm:gap-4 ml-auto">
         <div className="flex items-center gap-2">
           <label htmlFor={`days-${city.id}`} className="text-sm text-gray-500 hidden sm:inline">
             {t('summary.days')}:
@@ -74,13 +74,13 @@ function SortableCityItem({ city }: { city: City }) {
             max="30"
             value={city.days}
             onChange={(e) => updateDays(city.id, parseInt(e.target.value) || 1)}
-            className="w-16 px-2 py-1 text-center border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-900"
+            className="w-14 sm:w-16 px-1 sm:px-2 py-2 sm:py-1 text-center border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-900 text-base"
           />
         </div>
         
         <button
           onClick={() => removeCity(city.id)}
-          className="text-red-400 hover:text-red-600 p-1 rounded-full hover:bg-red-50 transition-colors"
+          className="text-red-400 hover:text-red-600 p-2 sm:p-1 rounded-full hover:bg-red-50 transition-colors"
           title="Remove city"
         >
           <Trash2 size={18} />
