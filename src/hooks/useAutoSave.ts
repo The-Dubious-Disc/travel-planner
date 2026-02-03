@@ -9,7 +9,6 @@ export function useAutoSave() {
     cities, 
     startDate, 
     totalDays, 
-    setIsSaving, 
     setLastSaved 
   } = useTripStore();
   
@@ -30,8 +29,6 @@ export function useAutoSave() {
       clearTimeout(timeoutRef.current);
     }
 
-    setIsSaving(true);
-
     // Debounce save (2 seconds)
     timeoutRef.current = setTimeout(async () => {
       try {
@@ -51,8 +48,6 @@ export function useAutoSave() {
         setLastSaved(new Date());
       } catch (error) {
         console.error('Error auto-saving trip:', error);
-      } finally {
-        setIsSaving(false);
       }
     }, 2000);
 
@@ -61,5 +56,5 @@ export function useAutoSave() {
         clearTimeout(timeoutRef.current);
       }
     };
-  }, [currentTripId, tripName, cities, startDate, totalDays, setIsSaving, setLastSaved]);
+  }, [currentTripId, tripName, cities, startDate, totalDays, setLastSaved]);
 }

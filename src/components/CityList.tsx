@@ -65,7 +65,7 @@ function SortableCityItem({ city }: { city: City }) {
               className="w-5 h-auto object-cover rounded-sm flex-shrink-0"
             />
           )}
-          <span className="truncate">{city.name}</span>
+          <span className="truncate">{city.name.split(',')[0]}</span>
         </div>
       </div>
 

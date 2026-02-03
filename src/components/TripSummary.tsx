@@ -4,11 +4,11 @@ import { useState } from 'react';
 import { useTripStore } from '@/store/useTripStore';
 import { useTranslation } from '@/hooks/useTranslation';
 import { format, addDays } from 'date-fns';
-import { Calendar as CalendarIcon, Clock, AlertTriangle, CheckCircle2, ChevronDown, ChevronUp } from 'lucide-react';
-// import { es, enUS } from 'date-fns/locale'; // Optional: if we want to localize dates later
+import { Calendar as CalendarIcon, Clock, AlertTriangle, CheckCircle2, ChevronDown, ChevronUp, Edit3 } from 'lucide-react';
 
 export default function TripSummary() {
   const [isExpanded, setIsExpanded] = useState(true);
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
   const { 
     tripName,
     setTripName,
@@ -38,7 +38,38 @@ export default function TripSummary() {
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <div className="flex items-center gap-3">
-          <h2 className="text-xl font-bold text-gray-900">{tripName || t('summary.title')}</h2>
+          {isEditingTitle ? (
+            <div className="flex items-center gap-2">
+              <div
+                contentEditable
+                suppressContentEditableWarning
+                className="text-xl font-bold text-gray-900 focus:outline-none border-b border-dashed border-gray-400"
+                onBlur={(e) => {
+                  setTripName(e.target.innerText);
+                  setIsEditingTitle(false);
+                }}
+              >
+                {tripName || t('summary.title')}
+              </div>
+              <button 
+                className="p-1 text-gray-600 hover:text-gray-800 transition-colors" 
+                onClick={() => setIsEditingTitle(false)}
+              >
+                <ChevronDown size={16} />
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <h2 className="text-xl font-bold text-gray-900">{tripName || t('summary.title')}</h2>
+              <button 
+                className="p-1 hover:bg-gray-100 rounded-full text-gray-500 transition-colors" 
+                onClick={() => setIsEditingTitle(true)}
+              >
+                <Edit3 size={16} />
+              </button>
+            </div>
+          )}
+
           {!isExpanded && (
             <span className="text-sm font-medium text-gray-600 bg-gray-100 px-2 py-0.5 rounded-full">
               {currentTotalDays} {t('summary.days')}

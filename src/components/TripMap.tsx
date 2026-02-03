@@ -53,7 +53,7 @@ export default function TripMap({ cities }: TripMapProps) {
   const positions = validCities.map(c => [c.latitude!, c.longitude!] as [number, number]);
 
   return (
-    <div className="h-full w-full rounded-lg overflow-hidden border border-gray-200 shadow-sm z-0">
+    <div className="h-[500px] w-full sm:h-full rounded-lg overflow-hidden border border-gray-200 shadow-sm z-0">
       <MapContainer 
         center={center} 
         zoom={4} 
