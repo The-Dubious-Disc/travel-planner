@@ -7,7 +7,8 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-  DragEndEvent
+  DragEndEvent,
+  DragStartEvent
 } from '@dnd-kit/core';
 import {
   SortableContext,
@@ -19,8 +20,11 @@ import { CSS } from '@dnd-kit/utilities';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { useTripStore, City } from '@/store/useTripStore';
 import { useTranslation } from '@/hooks/useTranslation';
-import { GripVertical, Trash2 } from 'lucide-react';
+import { GripVertical, Trash2, Plus, Minus } from 'lucide-react';
 import Image from 'next/image';
+import { useState } from 'react';
+import { createPortal } from 'react-dom';
+import TrashZone from './TrashZone';
 
 function SortableCityItem({ city }: { city: City }) {
   const {
@@ -72,24 +76,29 @@ function SortableCityItem({ city }: { city: City }) {
       </div>
 
       <div className="flex items-center gap-2 sm:gap-4 ml-auto">
-        <div className="flex items-center gap-2">
-          <label htmlFor={`days-${city.id}`} className="text-sm text-gray-500 hidden sm:inline">
-            {t('summary.days')}:
-          </label>
-          <input
-            id={`days-${city.id}`}
-            type="number"
-            min="1"
-            max="30"
-            value={city.days}
-            onChange={(e) => updateDays(city.id, parseInt(e.target.value) || 1)}
-            className="w-14 sm:w-16 px-1 sm:px-2 py-2 sm:py-1 text-center border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-900 text-base"
-          />
+        <div className="flex items-center bg-gray-50 rounded-lg border border-gray-200 p-0.5">
+          <button
+            onClick={() => updateDays(city.id, city.days - 1)}
+            disabled={city.days <= 1}
+            className="p-1.5 text-gray-500 hover:text-blue-600 disabled:opacity-30 transition-colors"
+          >
+            <Minus size={16} />
+          </button>
+          <span className="w-8 text-center font-semibold text-gray-900 tabular-nums">
+            {city.days}
+          </span>
+          <button
+            onClick={() => updateDays(city.id, city.days + 1)}
+            disabled={city.days >= 30}
+            className="p-1.5 text-gray-500 hover:text-blue-600 disabled:opacity-30 transition-colors"
+          >
+            <Plus size={16} />
+          </button>
         </div>
         
         <button
           onClick={() => removeCity(city.id)}
-          className="text-red-400 hover:text-red-600 p-2 sm:p-1 rounded-full hover:bg-red-50 transition-colors"
+          className="hidden sm:flex text-red-400 hover:text-red-600 p-2 rounded-full hover:bg-red-50 transition-colors"
           title="Remove city"
         >
           <Trash2 size={18} />
@@ -102,7 +111,9 @@ function SortableCityItem({ city }: { city: City }) {
 export default function CityList() {
   const cities = useTripStore((state) => state.cities);
   const reorderCities = useTripStore((state) => state.reorderCities);
+  const removeCity = useTripStore((state) => state.removeCity);
   const { t } = useTranslation();
+  const [activeId, setActiveId] = useState<string | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -111,8 +122,19 @@ export default function CityList() {
     })
   );
 
+  function handleDragStart(event: DragStartEvent) {
+    setActiveId(event.active.id as string);
+  }
+
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
+
+    setActiveId(null);
+
+    if (over && over.id === 'trash-zone') {
+      removeCity(active.id as string);
+      return;
+    }
 
     if (over && active.id !== over.id) {
       const oldIndex = cities.findIndex((item) => item.id === active.id);
@@ -133,6 +155,7 @@ export default function CityList() {
     <DndContext
       sensors={sensors}
       collisionDetection={closestCenter}
+      onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       modifiers={[restrictToVerticalAxis]}
     >
@@ -146,6 +169,7 @@ export default function CityList() {
           ))}
         </div>
       </SortableContext>
+      {activeId && createPortal(<TrashZone />, document.body)}
     </DndContext>
   );
 }
