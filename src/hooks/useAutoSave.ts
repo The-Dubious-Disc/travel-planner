@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/client';
 export function useAutoSave() {
   const { 
     currentTripId, 
-  // Removed tripName reference 
+    tripName,
     cities, 
     startDate, 
     totalDays, 
@@ -35,7 +35,7 @@ export function useAutoSave() {
         const { error } = await supabase
           .from('trips')
           .update({
-            // Removed tripName key from supabase update
+            name: tripName,
             cities: cities,
             start_date: startDate ? startDate.toISOString() : null,
             total_days: totalDays,
@@ -56,5 +56,5 @@ export function useAutoSave() {
         clearTimeout(timeoutRef.current);
       }
     };
-  }, [currentTripId, cities, startDate, totalDays, setLastSaved, supabase]);
+  }, [currentTripId, tripName, cities, startDate, totalDays, setLastSaved, supabase]);
 }
