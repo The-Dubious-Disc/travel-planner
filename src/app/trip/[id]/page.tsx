@@ -88,34 +88,6 @@ export default function TripPage() {
                   <MapPin className="text-blue-600" />
                   {t('app.title')}
                 </h1>
-                
-                {/* Save Status */}
-                <div className="flex items-center gap-2 text-sm text-gray-500 bg-white px-3 py-1 rounded-full border border-gray-200 shadow-sm">
-                  <Save size={14} className={isSaving ? "animate-pulse text-blue-500" : "text-gray-400"} />
-                  {isSaving ? (
-                    <span>Saving...</span>
-                  ) : lastSaved ? (
-                    <span>Saved {lastSaved.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
-                  ) : (
-                    <span>Saved</span>
-                  )}
-                </div>
-             </div>
-
-             <div className="flex items-center gap-2">
-                <Globe size={16} className="text-gray-500" />
-                <button 
-                  onClick={() => setLanguage('en')}
-                  className={`px-2 py-1 text-sm rounded ${language === 'en' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-gray-600 hover:bg-gray-100'}`}
-                >
-                  EN
-                </button>
-                <button 
-                  onClick={() => setLanguage('es')}
-                  className={`px-2 py-1 text-sm rounded ${language === 'es' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-gray-600 hover:bg-gray-100'}`}
-                >
-                  ES
-                </button>
              </div>
         </div>
 

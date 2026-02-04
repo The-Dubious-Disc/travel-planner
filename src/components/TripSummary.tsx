@@ -96,19 +96,6 @@ export default function TripSummary() {
         <div className="space-y-6 mt-6 animate-in fade-in slide-in-from-top-2 duration-200">
           {/* Settings: Start Date & Limit */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                {t('summary.trip_name') || "Trip Name"}
-              </label>
-              <input
-                type="text"
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-semibold text-gray-900"
-                value={tripName}
-                onChange={(e) => setTripName(e.target.value)}
-                placeholder="My Awesome Trip"
-              />
-            </div>
-
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 {t('summary.start_date')}

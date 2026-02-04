@@ -2,7 +2,7 @@
 
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -10,14 +10,16 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
-  const supabase = createClient()
+  const [supabaseClient] = useState(() => createClient());
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError(null)
 
-    const { error } = await supabase.auth.signInWithPassword({
+    if (!supabaseClient) return;
+
+    const { error } = await supabaseClient.auth.signInWithPassword({
       email,
       password,
     })
@@ -35,7 +37,9 @@ export default function LoginPage() {
     setLoading(true)
     setError(null)
     
-    const { data, error } = await supabase.auth.signUp({
+    if (!supabaseClient) return;
+
+    const { data, error } = await supabaseClient.auth.signUp({
         email,
         password,
     })
