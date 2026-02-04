@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useTripStore } from '@/store/useTripStore';
 import { useTranslation } from '@/hooks/useTranslation';
 import { format, addDays } from 'date-fns';
@@ -9,6 +9,8 @@ import { Calendar as CalendarIcon, Clock, AlertTriangle, CheckCircle2, ChevronDo
 export default function TripSummary() {
   const [isExpanded, setIsExpanded] = useState(true);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const titleRef = useRef<HTMLDivElement>(null);
+  
   const { 
     tripName,
     setTripName,
@@ -20,6 +22,40 @@ export default function TripSummary() {
   } = useTripStore();
 
   const { t } = useTranslation();
+
+  // Focus the title when starting to edit
+  useEffect(() => {
+    if (isEditingTitle && titleRef.current) {
+      titleRef.current.focus();
+      // Move cursor to the end
+      const range = document.createRange();
+      const selection = window.getSelection();
+      range.selectNodeContents(titleRef.current);
+      range.collapse(false);
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+    }
+  }, [isEditingTitle]);
+
+  const handleTitleBlur = () => {
+    if (titleRef.current) {
+      const newTitle = titleRef.current.innerText.trim();
+      if (newTitle && newTitle !== tripName) {
+        setTripName(newTitle);
+      }
+    }
+    setIsEditingTitle(false);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleTitleBlur();
+    }
+    if (e.key === 'Escape') {
+      setIsEditingTitle(false);
+    }
+  };
 
   const currentTotalDays = cities.reduce((sum, city) => sum + city.days, 0);
   const cityCount = cities.length;
@@ -41,22 +77,15 @@ export default function TripSummary() {
           {isEditingTitle ? (
             <div className="flex items-center gap-2">
               <div
+                ref={titleRef}
                 contentEditable
                 suppressContentEditableWarning
-                className="text-xl font-bold text-gray-900 focus:outline-none border-b border-dashed border-gray-400"
-                onBlur={(e) => {
-                  setTripName(e.target.innerText);
-                  setIsEditingTitle(false);
-                }}
+                className="text-xl font-bold text-gray-900 focus:outline-none border-b-2 border-blue-500 min-w-[50px] outline-none"
+                onBlur={handleTitleBlur}
+                onKeyDown={handleKeyDown}
               >
                 {tripName || t('summary.title')}
               </div>
-              <button 
-                className="p-1 text-gray-600 hover:text-gray-800 transition-colors" 
-                onClick={() => setIsEditingTitle(false)}
-              >
-                <ChevronDown size={16} />
-              </button>
             </div>
           ) : (
             <div className="flex items-center gap-2">
