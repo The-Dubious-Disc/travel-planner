@@ -1,94 +1,109 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { createClient } from '@/lib/supabase/client';
-import { MapPin, ArrowRight } from 'lucide-react';
-import Link from 'next/link';
+import { useProjectSummary } from '@/hooks/useProject';
+import { DollarSign, Wallet, Clock, TrendingUp, AlertCircle } from 'lucide-react';
 
 export default function Home() {
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState(true);
-  const supabase = createClient();
+  // Hardcodeamos un ID para el MVP
+  const { data, loading, error } = useProjectSummary('project-123');
 
-  useEffect(() => {
-    const checkUserAndRedirect = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+  const formatCurrency = (amount: number, currency: string) => {
+    return new Intl.NumberFormat('es-UY', {
+      style: 'currency',
+      currency: currency,
+    }).format(amount);
+  };
 
-      if (user) {
-        // Fetch latest trip
-        const { data: latestTrip } = await supabase
-          .from('trips')
-          .select('id')
-          .eq('user_id', user.id)
-          .order('updated_at', { ascending: false })
-          .limit(1)
-          .single();
-
-        if (latestTrip) {
-          router.push(`/trip/${latestTrip.id}`);
-        } else {
-          // Create new trip
-          const { data: newTrip } = await supabase
-            .from('trips')
-            .insert([
-              { 
-                user_id: user.id, 
-                name: 'My First Trip', 
-                cities: [],
-                updated_at: new Date().toISOString()
-              }
-            ])
-            .select()
-            .single();
-            
-          if (newTrip) {
-            router.push(`/trip/${newTrip.id}`);
-          }
-        }
-      } else {
-        setIsLoading(false);
-      }
-    };
-
-    checkUserAndRedirect();
-  }, [router, supabase]);
-
-  if (isLoading) {
+  if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen bg-gray-50 p-8 flex items-center justify-center">
+        <div className="space-y-4 w-full max-w-4xl">
+          <div className="h-8 bg-gray-200 animate-pulse rounded w-1/4"></div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-32 bg-gray-200 animate-pulse rounded-xl"></div>
+            ))}
+          </div>
+          <div className="h-40 bg-gray-200 animate-pulse rounded-xl"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !data) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-8 flex items-center justify-center">
+        <div className="bg-red-50 border border-red-200 text-red-700 p-6 rounded-xl flex items-center gap-4">
+          <AlertCircle className="w-8 h-8" />
+          <div>
+            <h3 className="font-bold">Error al cargar el resumen</h3>
+            <p>{error?.message || 'No se pudieron obtener los datos del proyecto.'}</p>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
-      <div className="max-w-md w-full text-center space-y-8">
-        <div className="flex justify-center">
-          <div className="bg-blue-100 p-4 rounded-full">
-            <MapPin className="w-12 h-12 text-blue-600" />
+    <main className="min-h-screen bg-gray-50 p-4 md:p-8">
+      <div className="max-w-5xl mx-auto space-y-8">
+        <header>
+          <h1 className="text-3xl font-bold text-gray-900">Dashboard de Proyecto</h1>
+          <p className="text-gray-500">Resumen financiero y estado de avance</p>
+        </header>
+
+        {/* Info Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <div className="flex items-center gap-4 mb-2">
+              <div className="p-2 bg-blue-50 rounded-lg">
+                <DollarSign className="w-6 h-6 text-blue-600" />
+              </div>
+              <span className="text-sm font-medium text-gray-500 uppercase tracking-wider">Monto Total</span>
+            </div>
+            <p className="text-2xl font-bold text-gray-900">{formatCurrency(data.montoTotal, data.moneda)}</p>
+          </div>
+
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <div className="flex items-center gap-4 mb-2">
+              <div className="p-2 bg-green-50 rounded-lg">
+                <Wallet className="w-6 h-6 text-green-600" />
+              </div>
+              <span className="text-sm font-medium text-gray-500 uppercase tracking-wider">Pagado</span>
+            </div>
+            <p className="text-2xl font-bold text-gray-900">{formatCurrency(data.montoPagado, data.moneda)}</p>
+          </div>
+
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <div className="flex items-center gap-4 mb-2">
+              <div className="p-2 bg-amber-50 rounded-lg">
+                <Clock className="w-6 h-6 text-amber-600" />
+              </div>
+              <span className="text-sm font-medium text-gray-500 uppercase tracking-wider">Pendiente</span>
+            </div>
+            <p className="text-2xl font-bold text-gray-900">{formatCurrency(data.montoPendiente, data.moneda)}</p>
           </div>
         </div>
-        
-        <h1 className="text-4xl font-bold text-gray-900 tracking-tight">
-          Plan Your Next Adventure
-        </h1>
-        
-        <p className="text-lg text-gray-600">
-          Create detailed itineraries, visualize your timeline, and organize your dream trip in minutes.
-        </p>
-        
-        <div className="flex flex-col gap-4 pt-4">
-          <Link 
-            href="/login" 
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2"
-          >
-            Get Started <ArrowRight size={18} />
-          </Link>
+
+        {/* Progress Section */}
+        <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <TrendingUp className="w-5 h-5 text-blue-600" />
+              <h2 className="text-lg font-semibold text-gray-900">Avance del Proyecto</h2>
+            </div>
+            <span className="text-2xl font-bold text-blue-600">{data.porcentajeAvance}%</span>
+          </div>
           
-          <p className="text-sm text-gray-500">
-            Already have an account? <Link href="/login" className="text-blue-600 hover:underline">Sign in</Link>
+          <div className="w-full bg-gray-100 rounded-full h-4 overflow-hidden">
+            <div 
+              className="bg-blue-600 h-full transition-all duration-500 ease-out"
+              style={{ width: `${data.porcentajeAvance}%` }}
+            />
+          </div>
+          
+          <p className="text-sm text-gray-500 text-right">
+            Meta del proyecto: {formatCurrency(data.montoTotal, data.moneda)}
           </p>
         </div>
       </div>
